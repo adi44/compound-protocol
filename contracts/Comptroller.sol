@@ -8,6 +8,7 @@ import "./PriceOracle.sol";
 import "./ComptrollerInterface.sol";
 import "./ComptrollerStorage.sol";
 import "./Unitroller.sol";
+import "./SafeMath.sol";
 
 /**
  * @title Compound's Comptroller Contract
@@ -280,6 +281,15 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
         minter;
         mintAmount;
 
+
+        //Ensure mint Amount is less then the maxAssetCap.
+        uint assetCap = assetCaps[cToken];
+        //AssetCap not set leads to unlimited supply
+        if(assetCap!=0){
+            uint totalsupply = CToken(cToken).totalSupply();
+            uint nextTotalSupply = SafeMath.add(totalsupply, mintAmount);
+            require(nextTotalSupply<=assetCap, "market asset Cap reached");
+        }
         // Make sure market is listed
         if (!markets[cToken].isListed) {
             return uint(Error.MARKET_NOT_LISTED);
