@@ -962,10 +962,10 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
 
     /**
      * @notice Admin function to change the Asset Cap Guardian
-     * @param newAssetCapGuardian The address of the new Borrow Cap Guardian
+     * @param newAssetCapGuardian The address of the new Asset Cap Guardian
      */
     function _setAssetCapGuardian(address newAssetCapGuardian) external {
-        require(msg.sender == admin, "only admin can set borrow cap guardian");
+        require(msg.sender == admin, "only admin can set asset cap guardian");
 
         // Save current value for inclusion in log
         address oldAssetCapGuardian = AssetCapGuardian;
