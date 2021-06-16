@@ -79,6 +79,18 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
      */
     event WhitelistEnforcementChanged(bool enforce);
 
+    /**
+     * @notice Emitted when assetCap is decided for asset
+     */
+    event NewAssetCap(CToken cToken, uint AssetCap);
+
+     /**
+     * @notice Emitted when AssetCap guardian is changed
+     */
+    event NewAssetCapGuardian(address oldAssetCapGuardian, address newAssetCapGuardian);
+
+
+
     // closeFactorMantissa must be strictly greater than this value
     uint internal constant closeFactorMinMantissa = 0.05e18; // 0.05
 
@@ -925,6 +937,44 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
         (mErr, maxBorrowOrRedeemAmount) = divScalarByExpTruncate(liquidity, conversionFactor);
         if (mErr != MathError.NO_ERROR) return (Error.MATH_ERROR, 0);
         return (Error.NO_ERROR, maxBorrowOrRedeemAmount);
+    }
+
+    /**
+      * @notice Set the given Asset caps for the given cToken markets. AssetCapSupply that brings total supply to or above asset cap will revert.
+      * @dev Admin or AssetCapGuardian function to set the Asset caps. A Asset cap of 0 corresponds to unlimited supply.
+      * @param cTokens The addresses of the markets (tokens) to change the supply caps for
+      * @param newAssetCaps The new borrow cap values in underlying to be set. A value of 0 corresponds to unlimited supply.
+      */
+
+        function _setMarketAssetCaps(CToken[] calldata cTokens, uint[] calldata newAssetCaps) external {
+    	require(msg.sender == admin || msg.sender == AssetCapGuardian, "only admin or borrow cap guardian can set borrow caps"); 
+
+        uint numMarkets = cTokens.length;
+        uint numAssetCaps = newAssetCaps.length;
+
+        require(numMarkets != 0 && numMarkets == numAssetCaps, "invalid input");
+
+        for(uint i = 0; i < numMarkets; i++) {
+            assetCaps[address(cTokens[i])] = newAssetCaps[i];
+            emit NewAssetCap(cTokens[i], newAssetCaps[i]);
+        }
+    }
+
+    /**
+     * @notice Admin function to change the Asset Cap Guardian
+     * @param newAssetCapGuardian The address of the new Borrow Cap Guardian
+     */
+    function _setAssetCapGuardian(address newAssetCapGuardian) external {
+        require(msg.sender == admin, "only admin can set borrow cap guardian");
+
+        // Save current value for inclusion in log
+        address oldAssetCapGuardian = AssetCapGuardian;
+
+        // Store AssetCapGuardian with value newAssetCapGuardian
+        AssetCapGuardian = newAssetCapGuardian;
+
+        // Emit NewAssetCapGuardian(OldAssetCapGuardian, NewAssetCapGuardian)
+        emit NewAssetCapGuardian(oldAssetCapGuardian, newAssetCapGuardian);
     }
 
     /**
