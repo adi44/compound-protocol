@@ -947,7 +947,9 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
       */
 
         function _setMarketAssetCaps(CToken[] calldata cTokens, uint[] calldata newAssetCaps) external {
-    	require(msg.sender == admin || msg.sender == AssetCapGuardian, "only admin or borrow cap guardian can set borrow caps"); 
+    	if (!hasAdminRights() && (msg.sender!=AssetCapGuardian)) {
+            return fail(Error.UNAUTHORIZED, FailureInfo.UNAUTHORIZED_CALLER_FOR_SETTING_ASSET_CAP);
+        }
 
         uint numMarkets = cTokens.length;
         uint numAssetCaps = newAssetCaps.length;
@@ -970,11 +972,13 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
         // Save current value for inclusion in log
         address oldAssetCapGuardian = AssetCapGuardian;
 
+        // Emit NewAssetCapGuardian(OldAssetCapGuardian, NewAssetCapGuardian)
+        emit NewAssetCapGuardian(oldAssetCapGuardian, newAssetCapGuardian);
+
         // Store AssetCapGuardian with value newAssetCapGuardian
         AssetCapGuardian = newAssetCapGuardian;
 
-        // Emit NewAssetCapGuardian(OldAssetCapGuardian, NewAssetCapGuardian)
-        emit NewAssetCapGuardian(oldAssetCapGuardian, newAssetCapGuardian);
+        
     }
 
     /**

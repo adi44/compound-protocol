@@ -137,7 +137,7 @@ contract ComptrollerV2Storage is ComptrollerV1Storage {
     /// @notice Indexes of account addresses in the `whitelistArray` array
     mapping(address => uint256) internal whitelistIndexes;
 
-    /// @notice Maps CTokens to Max Supply cap indicating what should be the maximum supply cap for all assets
+    /// @notice Maps CTokens to Max Supply cap indicating what should be the maximum supply cap for every asset
     mapping(address => uint) public assetCaps;
 
 
