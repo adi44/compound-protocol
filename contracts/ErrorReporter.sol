@@ -53,8 +53,7 @@ contract ComptrollerErrorReporter {
         UNAUTHORIZED_CALLER_FOR_SETTING_ASSET_CAP,
         UNSUPPORT_MARKET_OWNER_CHECK,
         UNSUPPORT_MARKET_DOES_NOT_EXIST,
-        UNSUPPORT_MARKET_IN_USE
-        
+        UNSUPPORT_MARKET_IN_USE       
     }
 
     /**
@@ -211,12 +210,13 @@ contract TokenErrorReporter {
         ADD_RESERVES_ACCRUE_INTEREST_FAILED,
         ADD_RESERVES_FRESH_CHECK,
         ADD_RESERVES_TRANSFER_IN_NOT_POSSIBLE
+    }
 
     /**
       * @dev `error` corresponds to enum Error; `info` corresponds to enum FailureInfo, and `detail` is an arbitrary
       * contract-specific code that enables us to report opaque error codes from upgradeable contracts.
       **/
-    }
+    
     event Failure(uint error, uint info, uint detail);
 
     /**

@@ -983,6 +983,8 @@ contract Comptroller is ComptrollerV2Storage, ComptrollerInterface, ComptrollerE
 
         // Store AssetCapGuardian with value newAssetCapGuardian
         AssetCapGuardian = newAssetCapGuardian;
+        
+        return uint(Error.NO_ERROR);
 
         
     }
